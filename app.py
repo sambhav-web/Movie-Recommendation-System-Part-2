@@ -27,7 +27,7 @@ def api_call(movie_id):
     response2=requests.get(image_url+image_path)
     with open(f'image{i+1}.jpg','wb') as f:
       f.write(response2.content)
-    return L
+  return L
 
 def recommend(movie):
   index=df[df['title']==movie].index[0]
