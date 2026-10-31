@@ -16,13 +16,14 @@ def recommend(movie):
 
 Movies=list(df['title'])
 st.title('Movie Recommendation System')
-st.info('This model predicts the similar movies as per choice. Sice it is frequency based model so can make wrong predictions.')
-movie=st.selectbox('Choose Movie :',[None]+Movies)
+st.info('💡 **Note:** This model generates recommendations based on keyword frequency. Results may vary based on similarity scores.')
+movie=st.sidebar.selectbox('Choose Movie :',[None]+Movies)
 if st.button('Suggest Movies'):
   if movie is None:
-    st.write('Please select a movie')
+    st.warning('⚠️ Please select a movie')
   else:
     st.subheader(f'Similar movies to {movie} are :')
     recommendations=recommend(movie)
-    for i,j in enumerate(recommendations):
-      st.subheader(f"{i} - {j}")
+    container = st.container(border=True)
+    for i in recommendations:
+      container.subheader(i)
