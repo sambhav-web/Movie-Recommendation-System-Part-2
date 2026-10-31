@@ -15,13 +15,19 @@ def api_call(movie_id):
   url="https://api.themoviedb.org/3/movie/"
   image_url="https://image.tmdb.org/t/p/w500/"
   params={ "api_key":key}
+  L=[]
   for i in movie_id:
     index=df[df.index==i]['id']
     response=requests.get(url+f"{index}",params=params)
-    image_path=response.json()['belongs_to_collection']['poster_path']
+    try:
+      image_path=response.json()['poster_path']
+    except Exception as e:
+      pass
+    L.append(f'image{i+1}.jpg')
     response2=requests.get(image_url+image_path)
     with open(f'image{i+1}.jpg','wb') as f:
       f.write(response2.content)
+    return L
 
 def recommend(movie):
   index=df[df['title']==movie].index[0]
@@ -29,9 +35,9 @@ def recommend(movie):
   scores= cosine_similarity(vector,vectors).ravel()
   movie_list=sorted(enumerate(scores),reverse=True,key=lambda x: x[1])[1:6]
   indexes=[i for i,j in movie_list]
-  api_call(indexes)
+  images=api_call(indexes)
   movies=[df[df.index==i]['title'].values[0] for i in indexes]
-  return movies
+  return movies,images
 
 Movies=list(df['title'])
 st.title('Movie Recommendation System')
@@ -42,8 +48,8 @@ if st.button('Suggest Movies'):
     st.warning('⚠️ Please select a movie')
   else:
     st.subheader(f'Similar movies to {movie} are :')
-    recommendations=recommend(movie)
-    for i,j in enumerate(recommendations):
-      with open(f'image{i+1}.jpg','rb') as f:
+    recommendations,images=recommend(movie)
+    for i,j in enumerate(images):
+      with open(j,'rb') as f:
         image=f.read()
-      st.image(image, caption=j, width=400)
+      st.image(image, caption=recommendations[i], width=400)
