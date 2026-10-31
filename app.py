@@ -3,7 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import joblib
 with open('vectors.pkl','rb') as f:
-  vectors=joblib.dump(f)
+  vectors=joblib.load(f)
 df=pd.read_csv('movies.pkl')
 def recommend(movie):
   index=df[df['title']==movie].index[0]
