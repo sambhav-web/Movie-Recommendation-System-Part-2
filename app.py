@@ -3,9 +3,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import joblib
 import requests
-from google.colab import userdata
+import os
 
-key = userdata.get('API')
+key = os.environ.get("TMDB_API_KEY")
 
 with open('vectors.pkl','rb') as f:
   vectors=joblib.load(f)
@@ -16,7 +16,8 @@ def api_call(movie_id):
   image_url="https://image.tmdb.org/t/p/w500/"
   params={ "api_key":key}
   for i in movie_id:
-    response=requests.get(url+f"{i}",params=params)
+    index=df[df.index==i]['id']
+    response=requests.get(url+f"{index}",params=params)
     image_path=response.json()['belongs_to_collection']['poster_path']
     response2=requests.get(image_url+image_path)
     with open(f'image{i+1}.jpg','wb') as f:
